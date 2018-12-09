@@ -176,12 +176,11 @@ public class Tester {
 			stmt = con.createStatement();
 			String sqlQuery = "";
 			String option = "";
-			String instruction = "Enter 1: Find k (0-100) hashtags that appeared in the most number of states; show the total number of states " + 
-					"the hashtag appeared, distinct states it appeared, and the hashtag itself in descending order " + 
-					"of the number of states it appeared." + "\n"
+			String instruction = "Enter 1: Input a value of k (0-100). Shows k hashtags which appeared in the greatest number of states: the number of those states, which states it appeared in,"
+					+ "and the hashtag." + "\n"
 					+ "Enter 2: Input a month, year, hashtag name, state name, and k (0-100). Shows the number of tweets and the users' screen names and categories. \n"
 					+ "Enter 3: Input a month, year, any number of state names, and k (0-100). Shows distinct hashtags that appeared in at least one of the states within the given date.\n"
-					+ "Enter 4: \n"
+					+ "Enter 4: Input a month, year, category, and k(0-100). Shows the names, states, and urls used by by k users, sorted by descending order of tweet posted time."
 					+ "Enter 5: Input a month, year and k (0-100). Shows the screen name, category of the user and the tweet text, retweet count, and url used by the user for that month and year. \n"
 					+ "Enter 6: \n"
 					+ "Enter 7: \n"
@@ -200,7 +199,10 @@ public class Tester {
 						JOptionPane.showMessageDialog(null,"INVALID K");
 						break;
 					}
-					sqlQuery = "SELECT \"hashtagname\" from hashtag h GROUB BY \"hashtagname\" ORDER BY count(1) desc LIMIT  " + selectedK;
+					sqlQuery = "SELECT COUNT(distinct ofstate) as c, u.ofstate, h.hastagname \r\n" + 
+							"FROM tweet t RIGHT JOIN `user` u ON t.posted_user = u.screen_name RIGHT JOIN tagged h ON t.tid = h.tid\r\n" + 
+							"GROUP BY h.hastagname ORDER BY c desc\r\n" + 
+							"LIMIT " + selectedK + ";";
 					runQuery(stmt, sqlQuery);
 					
 				//Q7
@@ -221,7 +223,7 @@ public class Tester {
 					String statename = option;
 					sqlQuery = "SELECT COUNT(hastagname),u.screen_name,u.category \r\n" + 
 							"FROM tweet t RIGHT JOIN `user` u ON t.posted_user = u.screen_name RIGHT JOIN tagged h ON t.tid = h.tid\r\n" + 
-							"WHERE (" + getDate(year,month) + ") AND h.hastagname=\"" + hashtag + "\" AND u.ofstate = \"" + statename + "\" LIMIT" + selectedK + ";";
+							"WHERE (" + getDate(year,month) + ") AND h.hastagname=\"" + hashtag + "\" AND u.ofstate = \"" + statename + "\" LIMIT " + selectedK + ";";
 					runQuery(stmt, sqlQuery);
 
 				//Q10
@@ -244,10 +246,30 @@ public class Tester {
 					statelist += "u.ofstate = \"" + option + "\" OR ";
 					stateint--;
 					}
+					option = JOptionPane.showInputDialog("Enter the state name.");
 					statelist += "u.ofstate = \"" + option + "\"";
-					sqlQuery = "SELECT DISTINCT h.hastagname \r\n" + 
+					sqlQuery = "SELECT h.hastagname, u.ofstate \r\n" + 
 							"FROM tweet t RIGHT JOIN `user` u ON t.posted_user = u.screen_name RIGHT JOIN tagged h ON t.tid = h.tid\r\n" + 
-							"WHERE (" + getDate(year,month) + ") AND ("  + statelist + ") ORDER BY h.hastagname ASC;";
+							"WHERE (" + getDate(year,month) + ") AND ("  + statelist + ") GROUP BY h.hastagname ORDER BY h.hastagname ASC LIMIT " + selectedK + ";";
+					runQuery(stmt, sqlQuery);	
+					
+				//Q15
+				} else if (option.equalsIgnoreCase("4")) {
+					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
+					int selectedK = Integer.parseInt(option);
+					if (selectedK > 100 || selectedK < 0) {
+						JOptionPane.showMessageDialog(null,"INVALID K");
+						break;
+					}
+					option = JOptionPane.showInputDialog("Enter the four digit year (e.g. 2016). Any other input will return nothing.");
+					String year = option;
+					option = JOptionPane.showInputDialog("Enter the two digit month (e.g. 01-12). Any other input will return nothing.");
+					String month = option;
+					option = JOptionPane.showInputDialog("Enter the category.");
+					String category = option;
+					sqlQuery = "SELECT u.screen_name,u.ofstate,r.url \r\n" + 
+							"FROM tweet t RIGHT JOIN `user` u ON t.posted_user = u.screen_name RIGHT JOIN url_used r ON t.tid = r.tid\r\n" + 
+							"WHERE (" + getDate(year,month) + ") AND u.category=\"" + category + "\" ORDER BY t.posted DESC LIMIT " + selectedK + ";";
 					runQuery(stmt, sqlQuery);	
 					
 				

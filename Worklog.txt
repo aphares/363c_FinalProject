@@ -2,7 +2,6 @@ Week of November 11th, 2018:
 	- Andrew drew an initial rough draft outlining the ER diagram
 	- Andrew created SQL files as starting templates
 	- Andrew created a git rep
-<<<<<<< HEAD
 
 Week of December 2nd, 2018:
 	- Marc verified the initial ER diagram
@@ -11,10 +10,7 @@ Week of December 2nd, 2018:
 	- Andrew:
 		- Set up hibernate in eclipse and pointed the java program to make queries to the Tweets database.
 		- Fixed our relational schema / made changes so that data could import without error
-		- Worked on the first five queries, three of them ready to optimize/test more
-=======
-Week of December 2nd, 2018: 
-	- Marc verified the initial ER diagram
-	- Marc reviewed and finalized the SQL relational database
-	- Andrew and Marc troubleshoot data imports
->>>>>>> c4e0b060e1e563777750ce00396c0a7782aa2da2
+		- Imported the bulk of tweets and user data into SQL (and portions of the other three – time required is 48+ hours even with correct schemas)
+		- Wrote first five queries
+		- wrote instructions for README.md
+		- created helper method to initialize the multiple conditionals for date-related queries
