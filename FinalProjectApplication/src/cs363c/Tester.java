@@ -21,7 +21,7 @@ import javax.swing.border.LineBorder;
 /**
  * This is Assignment 3 as a starting point for changing the database to the tweets database, and then adding the correct queries
  * @author Andrew Phares
- *
+ * @author Marc Isaac
  */
 public class Tester {
 	
@@ -297,7 +297,92 @@ public class Tester {
 					insertQuery(stmt);
 				} else if (option.equals("4")) {
 					removeQuery(stmt);
-				} 
+				} else if (option.equals("6")) {
+					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
+					int selectedK = Integer.parseInt(option);
+					if (selectedK > 100 || selectedK < 0) {
+						JOptionPane.showMessageDialog(null, "INVALID K");
+						break;
+					}
+					option = JOptionPane.showInputDialog("Enter the four digit year (e.g. 2016).");
+					String year = option;
+					option = JOptionPane.showInputDialog("Enter the two digit month (e.g. 01-12).");
+					String month = option;
+					option = JOptionPane.showInputDialog("Enter the category. ");
+					String category = option;
+					sqlQuery = "" + 
+							"SELECT m.screen_name from tweet t RIGHT JOIN mentioned m ON t.tid = u.tid RIGHT JOIN user u ON m.screen_name = u.screen_name WHERE"
+							+ getDate(year, month) + " AND u.category = " + category + "LIMIT " + selectedK + ";";
+				} else if (option.equals("7")) {
+					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
+					int selectedK = Integer.parseInt(option);
+					if (selectedK > 100 || selectedK < 0) {
+						JOptionPane.showMessageDialog(null, "INVALID K");
+						break;
+					}
+					option = JOptionPane.showInputDialog("Enter the four digit year (e.g. 2016).");
+					String year = option;
+					option = JOptionPane.showInputDialog("Enter the two digit month (e.g. 01-12).");
+					String month = option;
+					option = JOptionPane.showInputDialog("Enter the category. ");
+					String category = option;
+					// need list of states
+					sqlQuery = "" + 
+							"SELECT count(t.tid) from tweet t RIGHT JOIN hashtag h ON t.tid = h.tid GROUP BY h ORDER BY count(t.tid) DESC LIMIT " + selectedK + ";";
+				} else if (option.equals("8")) {
+					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
+					int selectedK = Integer.parseInt(option);
+					if (selectedK > 100 || selectedK < 0) {
+						JOptionPane.showMessageDialog(null, "INVALID K");
+						break;
+					}
+					option = JOptionPane.showInputDialog("Enter the four digit year (e.g. 2016). ");
+					String year = option;
+					option = JOptionPane.showInputDialog("Enter the two digit month (e.g. 01-12).");
+					String month = option;
+					option = JOptionPane.showInputDialog("Enter the category of the mentioned user. ");
+					String catMen = option;
+					option = JOptionPane.showInputDialog("Enter the category of the posting user. ");
+					String catPost = option;
+					// I don't know how to do this one
+					sqlQuery = "" + 
+							"SELECT u ";
+				} else if (option.equals("9")) {
+					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
+					int selectedK = Integer.parseInt(option);
+					if (selectedK > 100 || selectedK < 0) {
+						JOptionPane.showMessageDialog(null, "INVALID K");
+						break;
+					}
+					option = JOptionPane.showInputDialog("Enter the four digit year (e.g. 2016). ");
+					String year = option;
+					option = JOptionPane.showInputDialog("Enter the two digit month (e.g. 01-12).");
+					String month = option;
+					option = JOptionPane.showInputDialog("Enter the sub-category. ");
+					String subCat = option;
+					sqlQuery = "" + 
+							"SELECT t.textbody, t.posted_user, m.screen_name from tweet t RIGHT JOIN mentioned m ON t.tid"
+							+ " = m.tid RIGHT JOIN user u WHERE m.screen_name = u.screen_name AND u.sub_category = " + subCat + ";";
+				} else if (option.equals("10")) {
+					option = JOptionPane.showInputDialog("Enter the screen_name of the user. ");
+					String screen = option;
+					option = JOptionPane.showInputDialog("Enter the name of the user. ");
+					String name = option;
+					option = JOptionPane.showInputDialog("Enter the sub-category of the user. ");
+					String subCat = option;
+					option = JOptionPane.showInputDialog("Enter the category of the user. ");
+					String cat = option;
+					option = JOptionPane.showInputDialog("Enter the ofstate. ");
+					String ofstate = option;
+					option = JOptionPane.showInputDialog("Enter the number of followers. ");
+					String numFol = option;
+					option = JOptionPane.showInputDialog("Enter the number of people following. ");
+					String numFoling = option;
+					
+					sqlQuery = "" + 
+							"INSERT INTO user (screen_name, name, sub_category, category, ofstate, numFollowers, numFollowing) VALUES "
+							+ "(" + screen + ", " + name + ", " + subCat + ", " + cat + ", " + ofstate + ", " + numFol + ", " + numFoling + ");"; 
+				}
 				else {
 					break;
 				}
