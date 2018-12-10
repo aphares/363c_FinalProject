@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 /**
- * This is Assignment 3 as a starting point for changing the database to the tweets database, and then adding the correct queries
+ * This is an application which, upon succesful login, queries the tweets database.
  * @author Andrew Phares
  * @author Marc Isaac
  */
@@ -98,65 +98,9 @@ public class Tester {
 	}
 	
 	/**
-	 * This inserts a new supplier into the table based on the user's input for
-	 * sname and address
-	 * @param stmt stmt object that will call to SQL server
-	 * @throws SQLException SQLException this will be thrown if SQL syntax is incorrect or if some other issue
-	 * arises when using the stmt object
-	 */
-	private static void insertQuery(Statement stmt) throws SQLException {
-		String snameprompt = "Enter the new sname";
-		String sname = JOptionPane.showInputDialog(snameprompt);
-		String addressprompt = "Enter the new address";
-		String address = JOptionPane.showInputDialog(addressprompt);
-		
-		String query = "INSERT INTO suppliers (sid, sname, address) " + 
-				"VALUES ((SELECT MAX(s.sid) FROM suppliers s)+1, \"" + sname + "\", \"" + address + "\");";
-		
-		int rs;
-		System.out.println("QUERY:\n" + query);
-		rs = stmt.executeUpdate(query);
-		JOptionPane.showMessageDialog(null,"New supplier has been added.");
-	}
-	
-	/**
-	 * This removes a Catalog entry from the Catalog table based on which sid/pid
-	 * the user inputs for deletion.
-	 * 
-	 * @param stmt stmt object that will call to SQL server
-	 * @throws SQLException SQLException this will be thrown if SQL syntax is incorrect or if some other issue
-	 * arises when using the stmt object
-	 */
-	private static void removeQuery(Statement stmt) throws SQLException {
-		
-		ResultSet rs;
-		ResultSetMetaData rsMetaData;
-		String toShow;
-		rs = stmt.executeQuery("SELECT s.sid, s.sname, p.pid, p.pname from suppliers s inner join catalog c on s.sid = c.sid inner join parts p on c.pid = p.pid");
-		rsMetaData = rs.getMetaData();
-		toShow = "Current Catalog Info: Press enter to continue.\n";
-		while (rs.next()) {
-			for (int i = 0; i < rsMetaData.getColumnCount(); i++) {
-				toShow += rs.getString(i + 1) + ", ";
-			}
-			toShow += "\n";
-		}
-		if (toShow.compareTo("Current Catalog Info: Press enter to continue.\n") == 0) {
-			toShow = "NO DATA IN CATALOG";
-		}
-		JOptionPane.showMessageDialog(null, toShow);
-		
-		String sidprompt = "Enter the sid/pid to delete from this list:";
-		String sid = JOptionPane.showInputDialog(sidprompt);
-		String query = "DELETE FROM Catalog c WHERE c.sid = " + sid + ";";
-		int change = stmt.executeUpdate(query);
-		System.out.println(query);
-	}
-	
-	/**
 	 * This execute the java window requiring a login, and then upon successful
 	 * login will allow the user to execute various SQL queries based on an input
-	 * between 1-5
+	 * between 1-10
 	 * @param args main method
 	 */
 	public static void main(String[] args) {
@@ -182,11 +126,11 @@ public class Tester {
 					+ "Enter 3: Input a month, year, any number of state names, and k (0-100). Shows distinct hashtags that appeared in at least one of the states within the given date.\n"
 					+ "Enter 4: Input a month, year, category, and k(0-100). Shows the names, states, and urls used by by k users, sorted by descending order of tweet posted time."
 					+ "Enter 5: Input a month, year and k (0-100). Shows the screen name, category of the user and the tweet text, retweet count, and url used by the user for that month and year. \n"
-					+ "Enter 6: \n"
-					+ "Enter 7: \n"
-					+ "Enter 8: \n"
-					+ "Enter 9: \n"
-					+ "Enter 10: \n"
+					+ "Enter 6: Input a category, month, year, and k(0-100). Shows the user names of users mentioned in tweets of users of the specified input. \n"
+					+ "Enter 7: Input a category, month, year, and k(0-100). Shows most-used hashtags among all the users of the specified input, as well as the tweet text, uername, and the mentioned user. \n"
+					+ "Enter 8: Input two categories for two different users, month, year, and k (0-100). Shows tweets and the user names of any users who mention each other in the given categories. \n"
+					+ "Enter 9: Input a sub-category, month, year, and k(0-100). Shows the tweet text, user name, and user mentioned for the input specified. \n"
+					+ "Enter 10: Insert information of a new user into the database."
 					+ "Enter anything else to exit.";
 			while (true) {
 				option = JOptionPane.showInputDialog(instruction);
@@ -293,10 +237,6 @@ public class Tester {
 							getDate(year,month) +
 							"ORDER BY t.retweet_count desc LIMIT " + selectedK + ";";
 					runQuery(stmt, sqlQuery);
-				} else if (option.equals("3")) {
-					insertQuery(stmt);
-				} else if (option.equals("4")) {
-					removeQuery(stmt);
 				} else if (option.equals("6")) {
 					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
 					int selectedK = Integer.parseInt(option);
@@ -344,9 +284,10 @@ public class Tester {
 					String catMen = option;
 					option = JOptionPane.showInputDialog("Enter the category of the posting user. ");
 					String catPost = option;
-					// I don't know how to do this one
-					sqlQuery = "" + 
-							"SELECT u ";
+
+					sqlQuery =  "SELECT t.textbody, u1.screen_name,u2.screen_name\r\n" + 
+								"from tweet t RIGHT JOIN mentioned m ON t.tid = m.tid RIGHT JOIN user u1 ON m.screen_name = u1.screen_name RIGHT JOIN user u2 ON t.posted_user = u2.screen_name\r\n" + 
+								"WHERE u2.category = \"" + catPost + "\" AND u2.category = \"" + catMen + "\" AND (" + getDate(year, month)  + ") LIMIT " + selectedK + ";";
 				} else if (option.equals("9")) {
 					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
 					int selectedK = Integer.parseInt(option);

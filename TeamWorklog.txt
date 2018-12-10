@@ -14,3 +14,8 @@ Week of December 2nd, 2018:
 		- Wrote first five queries
 		- wrote instructions for README.md
 		- created helper method to initialize the multiple conditionals for date-related queries
+
+Week of December 9th, 2018
+	- Marc finished queries 6,7,9,10
+	- Andrew finished query 8.
+	- Andrew completed the instructions that appear on the main menu for each query.

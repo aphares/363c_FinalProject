@@ -1,4 +1,3 @@
 USE `Tweets_Database`;
 
--- WORKSPACE (this file can be deleted before submission)
-
+-- This file is not needed because we use mysql's import wizard to insert the massive amounts of data into our database.

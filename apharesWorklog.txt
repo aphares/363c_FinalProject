@@ -1,0 +1,22 @@
+Week of November 11th, 2018:
+	- Andrew drew an initial rough draft outlining the ER diagram
+	- Andrew created SQL files as starting templates
+	- Andrew created a git rep
+	- Work hours: 2-3 hours before break.
+
+Week of December 2nd, 2018:
+	- Andrew and Marc troubleshooted data imports
+	- Andrew:
+		- Set up hibernate in eclipse and pointed the java program to make queries to the Tweets database.
+		- Fixed our relational schema / made changes so that data could import without error
+		- Imported the bulk of tweets and user data into SQL (and portions of the other three – time required is 48+ hours even with correct schemas)
+		- Wrote first five queries
+		- wrote instructions for README.md
+		- created helper method to initialize the multiple conditionals for date-related queries
+	Work hours: across the different nights and afternoons I worked on it, I think it would be around 10-12 hours altogether spent this week on the project trying to figure out exactly what the queries were asking, then trying to find the resources necessary to answer my interpretation of those queries. (The time required for me to write just five queries was exacerbated by misunderstandings on the instructions for the queries. I am still very unconfident I am answering exactly what the instructions need: there is a mix up in the instructions between singular and plural column data (e.g. whether or not we return each and every state for the first query for each and every hashstag (which I could not find any resource to produce that result) or if we return a state for each and every hashtag.))  
+
+Week of December 9th, 2018
+	- Andrew finished query 8.
+	- Andrew completed the instructions that appear on the main menu for each query.
+	- Updated team worklog and my worklog
+	Work hours: about 1-1.5 hrs
