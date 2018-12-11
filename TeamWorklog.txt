@@ -16,6 +16,11 @@ Week of December 2nd, 2018:
 		- created helper method to initialize the multiple conditionals for date-related queries
 
 Week of December 9th, 2018
-	- Marc finished queries 6,7,9,10
+	- Marc created HibernateSession class
+	- Marc troubleshooted the HibernateSession class 
+		- Attempted to fix errors with session factory
+		- Kept trying to import suppliers
+	- Marc created and coded the User class
+	- Marc wrote queries 6,7,9,10
 	- Andrew finished query 8.
 	- Andrew completed the instructions that appear on the main menu for each query.

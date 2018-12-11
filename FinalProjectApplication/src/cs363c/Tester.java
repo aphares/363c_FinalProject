@@ -18,6 +18,13 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 /**
  * This is an application which, upon succesful login, queries the tweets database.
  * @author Andrew Phares
@@ -106,15 +113,17 @@ public class Tester {
 	public static void main(String[] args) {
 		
 		String result[] = loginDialog();
-		String dbServer = "jdbc:mysql://cs363-aphares.misc.iastate.edu:3306/tweets_database?useSSL=false";
+		String dbServer = "jdbc:mysql://localhost:3306/tweets_database?useSSL=false";
 		String userName = result[0];
 		String password = result[1];
+		
 
 		
 		Connection con = null;
 		Statement stmt;
 		
 		try {
+			
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection(dbServer, userName, password);
 			stmt = con.createStatement();
@@ -251,8 +260,9 @@ public class Tester {
 					option = JOptionPane.showInputDialog("Enter the category. ");
 					String category = option;
 					sqlQuery = "" + 
-							"SELECT m.screen_name from tweet t RIGHT JOIN mentioned m ON t.tid = u.tid RIGHT JOIN user u ON m.screen_name = u.screen_name WHERE"
-							+ getDate(year, month) + " AND u.category = " + category + "LIMIT " + selectedK + ";";
+							"SELECT m.screen_name from mentioned m RIGHT JOIN tweet t ON m.tid = t.tid RIGHT JOIN user u ON m.screen_name = u.screen_name WHERE "
+							+ getDate(year, month) + " AND (u.category = \"" + category + "\") LIMIT " + selectedK + ";";
+					runQuery(stmt, sqlQuery);
 				} else if (option.equals("7")) {
 					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
 					int selectedK = Integer.parseInt(option);
@@ -268,7 +278,8 @@ public class Tester {
 					String category = option;
 					// need list of states
 					sqlQuery = "" + 
-							"SELECT count(t.tid) from tweet t RIGHT JOIN hashtag h ON t.tid = h.tid GROUP BY h ORDER BY count(t.tid) DESC LIMIT " + selectedK + ";";
+							"SELECT count(t.tid) from tweet t RIGHT JOIN tagged h ON t.tid = h.tid WHERE " + getDate(year, month) + "GROUP BY h.hastagname ORDER BY count(t.tid) DESC LIMIT " + selectedK + ";";
+					runQuery(stmt, sqlQuery);
 				} else if (option.equals("8")) {
 					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
 					int selectedK = Integer.parseInt(option);
@@ -288,6 +299,7 @@ public class Tester {
 					sqlQuery =  "SELECT t.textbody, u1.screen_name,u2.screen_name\r\n" + 
 								"from tweet t RIGHT JOIN mentioned m ON t.tid = m.tid RIGHT JOIN user u1 ON m.screen_name = u1.screen_name RIGHT JOIN user u2 ON t.posted_user = u2.screen_name\r\n" + 
 								"WHERE u2.category = \"" + catPost + "\" AND u2.category = \"" + catMen + "\" AND (" + getDate(year, month)  + ") LIMIT " + selectedK + ";";
+					runQuery(stmt, sqlQuery);
 				} else if (option.equals("9")) {
 					option = JOptionPane.showInputDialog("Enter the value for k (0-100):");
 					int selectedK = Integer.parseInt(option);
@@ -303,7 +315,8 @@ public class Tester {
 					String subCat = option;
 					sqlQuery = "" + 
 							"SELECT t.textbody, t.posted_user, m.screen_name from tweet t RIGHT JOIN mentioned m ON t.tid"
-							+ " = m.tid RIGHT JOIN user u WHERE m.screen_name = u.screen_name AND u.sub_category = " + subCat + ";";
+							+ " = m.tid RIGHT JOIN user u ON m.screen_name = u.screen_name WHERE (u.sub_category = \"" + subCat + "\") AND (" + getDate(year, month) + ") LIMIT " + selectedK + ";";
+					runQuery(stmt, sqlQuery);
 				} else if (option.equals("10")) {
 					option = JOptionPane.showInputDialog("Enter the screen_name of the user. ");
 					String screen = option;
@@ -316,13 +329,35 @@ public class Tester {
 					option = JOptionPane.showInputDialog("Enter the ofstate. ");
 					String ofstate = option;
 					option = JOptionPane.showInputDialog("Enter the number of followers. ");
-					String numFol = option;
+					int numFol = Integer.parseInt(option);
 					option = JOptionPane.showInputDialog("Enter the number of people following. ");
-					String numFoling = option;
+					int numFoling = Integer.parseInt(option);
 					
-					sqlQuery = "" + 
-							"INSERT INTO user (screen_name, name, sub_category, category, ofstate, numFollowers, numFollowing) VALUES "
-							+ "(" + screen + ", " + name + ", " + subCat + ", " + cat + ", " + ofstate + ", " + numFol + ", " + numFoling + ");"; 
+					User u = new User();
+					u.setScreenname(screen);
+					u.setName(name);
+					u.setSubcat(subCat);
+					u.setCat(cat);
+					u.setState(ofstate);
+					u.setFollowers(numFol);
+					u.setFollowing(numFoling);
+					
+					Configuration config = new Configuration().configure().addAnnotatedClass(User.class);
+				    ServiceRegistry reg = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+				    SessionFactory sf = config.buildSessionFactory(reg);
+				    Session session = sf.openSession();
+				    
+				    Transaction tx = session.beginTransaction();
+				    session.saveOrUpdate(u);
+
+				    tx.commit();
+				    session.close();
+
+//					
+//					sqlQuery = "" + 
+//							"INSERT INTO user (screen_name, name, sub_category, category, ofstate, numFollowers, numFollowing) VALUES "
+//							+ "(\"" + screen + "\", \"" + name + "\", \"" + subCat + "\", \"" + cat + "\", \"" + ofstate + "\", \"" + numFol + "\", \"" + numFoling + "\");"; 
+//					runQuery(stmt, sqlQuery);
 				}
 				else {
 					break;
