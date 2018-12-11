@@ -318,40 +318,9 @@ public class Tester {
 							+ " = m.tid RIGHT JOIN user u ON m.screen_name = u.screen_name WHERE (u.sub_category = \"" + subCat + "\") AND (" + getDate(year, month) + ") LIMIT " + selectedK + ";";
 					runQuery(stmt, sqlQuery);
 				} else if (option.equals("10")) {
-					option = JOptionPane.showInputDialog("Enter the screen_name of the user. ");
-					String screen = option;
-					option = JOptionPane.showInputDialog("Enter the name of the user. ");
-					String name = option;
-					option = JOptionPane.showInputDialog("Enter the sub-category of the user. ");
-					String subCat = option;
-					option = JOptionPane.showInputDialog("Enter the category of the user. ");
-					String cat = option;
-					option = JOptionPane.showInputDialog("Enter the ofstate. ");
-					String ofstate = option;
-					option = JOptionPane.showInputDialog("Enter the number of followers. ");
-					int numFol = Integer.parseInt(option);
-					option = JOptionPane.showInputDialog("Enter the number of people following. ");
-					int numFoling = Integer.parseInt(option);
 					
-					User u = new User();
-					u.setScreenname(screen);
-					u.setName(name);
-					u.setSubcat(subCat);
-					u.setCat(cat);
-					u.setState(ofstate);
-					u.setFollowers(numFol);
-					u.setFollowing(numFoling);
 					
-					Configuration config = new Configuration().configure().addAnnotatedClass(User.class);
-				    ServiceRegistry reg = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-				    SessionFactory sf = config.buildSessionFactory(reg);
-				    Session session = sf.openSession();
-				    
-				    Transaction tx = session.beginTransaction();
-				    session.saveOrUpdate(u);
-
-				    tx.commit();
-				    session.close();
+					insertQuery(stmt);
 
 //					
 //					sqlQuery = "" + 
@@ -370,6 +339,49 @@ public class Tester {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+     * This inserts a new supplier into the table based on the user's input for
+     * sname and address
+     * @param stmt stmt object that will call to SQL server
+     * @throws SQLException SQLException this will be thrown if SQL
+syntax is incorrect or if some other issue
+     * arises when using the stmt object
+     */
+    private static void insertQuery(Statement stmt) throws SQLException {
+    	String option = JOptionPane.showInputDialog("Enter the screen_name of the user. ");
+		String screen = option;
+		option = JOptionPane.showInputDialog("Enter the name of the user. ");
+		String name = option;
+		option = JOptionPane.showInputDialog("Enter the sub-category of the user. ");
+		String subCat = option;
+		option = JOptionPane.showInputDialog("Enter the category of the user. ");
+		String cat = option;
+		option = JOptionPane.showInputDialog("Enter the ofstate. ");
+		String ofstate = option;
+		option = JOptionPane.showInputDialog("Enter the number of followers. ");
+		int numFol = Integer.parseInt(option);
+		option = JOptionPane.showInputDialog("Enter the number of people following. ");
+		int numFoling = Integer.parseInt(option);
+		
+		User u = new User();
+		u.setScreenname(screen);
+		u.setName(name);
+		u.setSubcat(subCat);
+		u.setCat(cat);
+		u.setState(ofstate);
+		u.setFollowers(numFol);
+		u.setFollowing(numFoling);
+		
+            String query = "INSERT INTO user (screen_name, name, sub_category, category, ofstate, numFollowers, numFollowing) " +
+                            "VALUES (\"" + screen + "\", \"" + name + "\", \"" + subCat + "\", \"" + cat + "\", \"" + ofstate + "\", \"" + numFol + "\", \"" + numFoling + "\");";
+
+            int rs;
+            System.out.println("QUERY:\n" + query);
+            rs = stmt.executeUpdate(query);
+            JOptionPane.showMessageDialog(null,"New user has been added.");
+    }
+	
 	/** Constructs 31 conditions in the SQL query for finding the date.
 	 * @param year the year 
 	 * @param month the month
